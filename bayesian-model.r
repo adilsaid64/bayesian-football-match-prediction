@@ -80,8 +80,9 @@ FT_TP_G_rolling_mean_test <- filtered_test_data$FT_TP_G_rolling_mean
 FT_OP_G_rolling_mean_test <- filtered_test_data$FT_OP_G_rolling_mean
 target_rolling_mean_test <- filtered_test_data$target_rolling_mean
 
-logit_p_1 <- samples[[1]][,1] + samples[[1]][,2]*TP_encoded_test[1]+samples[[1]][,3]*OP_encoded_test[1]+samples[[1]][,4]*is_home_test[1]+samples[[1]][,5]*FT_OP_G_rolling_mean_test[1]+samples[[1]][,6]*target_rolling_mean_test[1]
-logit_p_2 <- samples[[1]][,1] + samples[[1]][,2]*TP_encoded_test[2]+samples[[1]][,3]*OP_encoded_test[2]+samples[[1]][,4]*is_home_test[2]+samples[[1]][,5]*FT_OP_G_rolling_mean_test[2]+samples[[1]][,6]*target_rolling_mean_test[2]
+
+logit_p_1 <- samples[[1]][,1] + samples[[1]][,2]*TP_encoded_test[2]+samples[[1]][,3]*OP_encoded_test[2]+samples[[1]][,4]*is_home_test[2]+samples[[1]][,5]*FT_OP_G_rolling_mean_test[2]+samples[[1]][,6]*target_rolling_mean_test[2]
+logit_p_2 <- samples[[1]][,1] + samples[[1]][,2]*TP_encoded_test[3]+samples[[1]][,3]*OP_encoded_test[3]+samples[[1]][,4]*is_home_test[3]+samples[[1]][,5]*FT_OP_G_rolling_mean_test[3]+samples[[1]][,6]*target_rolling_mean_test[3]
 
 pred_1 = exp(logit_p_1)/(1+exp(logit_p_1))
 pred_2 = exp(logit_p_2)/(1+exp(logit_p_2))
@@ -97,3 +98,4 @@ ggplot(pred_df) +
                  bins = 30, alpha=0.5) +
   geom_histogram(aes(x = pred_2, y = ..density.., color = 'away_team', fill='away_team' ),
                  bins = 30, alpha=0.5)
+
