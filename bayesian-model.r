@@ -1,69 +1,48 @@
 library("rjags")
 
-train_data <- read.csv('data/train_encoded.csv')
-test_data <- read.csv('data/test_encoded.csv')
+X_train <- read.csv('data/X_train.csv')
+y_train <- read.csv('data/y_train.csv')
 
-# Feature that will be used and what they represent: 
-# TP_encoded - The team playing  id
-# OP_encoded - The opposition team id
-# is_home - If the team playing is home or not.
-# FT_TP_G_rolling_mean - Last 3 games average of goals scored for the team playing.
-# FT_OP_G_rolling_mean - Last 3 games average if goals conceded for the team playing.
-# target_rolling_mean - Last 3 games average results for the team playing.
-
-features = c("TP_encoded", "OP_encoded", "is_home", "FT_TP_G_rolling_mean", "FT_OP_G_rolling_mean", "target_rolling_mean", "target") 
-filtered_train_data <- train_data[features]
-filtered_test_data <- test_data[features]
+X_test <- read.csv('data/X_test.csv')
+y_test <- read.csv('data/y_test.csv')
 
 # JAGS model
-model_string = "
-model{
+model_string <- 'model{
   for(i in 1:N){
     y[i] ~ dbern(p[i])
-    logit(p[i]) <- beta[1] + beta[2]*TP_encoded[i] + beta[3]*OP_encoded[i] + beta[4]*is_home[i] + beta[5]*FT_TP_G_rolling_mean[i] + beta[6]*FT_OP_G_rolling_mean[i] + beta[7]*target_rolling_mean[i]
+    logit(p[i]) <- eta[i]
+    eta[i] <- inprod(X[i,], beta[])
   }
   
+  # Weakly informative priors for coefficients
   for(j in 1:P){
     beta[j] ~ dnorm(0, 0.001)
   }
-}
-"
+}'
+
 writeLines(model_string , con="model.txt" )
 
 
-y <- filtered_train_data$target
-TP_encoded <- filtered_train_data$TP_encoded
-OP_encoded <- filtered_train_data$OP_encoded
-is_home <- filtered_train_data$is_home
-FT_TP_G_rolling_mean <- filtered_train_data$FT_TP_G_rolling_mean
-FT_OP_G_rolling_mean <- filtered_train_data$FT_OP_G_rolling_mean
-target_rolling_mean <- filtered_train_data$target_rolling_mean
-N <- length(y)
-P = 7
 
-jags_data <- list(
-  N = N,
-  P = P,
-  y = y,
-  TP_encoded = TP_encoded,
-  OP_encoded = OP_encoded,
-  is_home = is_home,
-  FT_TP_G_rolling_mean = FT_TP_G_rolling_mean,
-  FT_OP_G_rolling_mean = FT_OP_G_rolling_mean,
-  target_rolling_mean = target_rolling_mean
+data_list <- list(
+  N = nrow(X_train),
+  P = ncol(X_train),  
+  y = as.numeric(y_train[,1]),
+  X = as.matrix(X_train)
 )
 
 
+
 jags_model <- jags.model(file = "model.txt",
-                        data = jags_data,
+                        data = data_list,
                         n.chains = 2,
                         n.adapt = 300)
 
-update(jags_model, n.iter=1000)
+#update(jags_model, n.iter=1000)
 
 samples <- coda.samples(jags_model,
                         variable.names = c("beta"),
-                        n.iter = 10000,
+                        n.iter = 5000,
                         thin = 10)
 summary(samples)
 
