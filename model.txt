@@ -1,12 +1,12 @@
-
 model{
   for(i in 1:N){
     y[i] ~ dbern(p[i])
-    logit(p[i]) <- beta[1] + beta[2]*TP_encoded[i] + beta[3]*OP_encoded[i] + beta[4]*is_home[i] + beta[5]*FT_TP_G_rolling_mean[i] + beta[6]*FT_OP_G_rolling_mean[i] + beta[7]*target_rolling_mean[i]
+    logit(p[i]) <- eta[i]
+    eta[i] <- inprod(X[i,], beta[]) # linear predictors using inner product notation.
   }
   
+  # Weakly informative priors for coefficients
   for(j in 1:P){
     beta[j] ~ dnorm(0, 0.001)
   }
 }
-
