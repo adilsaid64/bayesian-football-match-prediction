@@ -11,7 +11,7 @@ model_string <- 'model{
   for(i in 1:N){
     y[i] ~ dbern(p[i])
     logit(p[i]) <- eta[i]
-    eta[i] <- inprod(X[i,], beta[])
+    eta[i] <- inprod(X[i,], beta[]) # linear predictors using inner product notation.
   }
   
   # Weakly informative priors for coefficients
@@ -36,9 +36,7 @@ data_list <- list(
 jags_model <- jags.model(file = "model.txt",
                         data = data_list,
                         n.chains = 2,
-                        n.adapt = 300)
-
-#update(jags_model, n.iter=1000)
+                        n.adapt = 1000)
 
 samples <- coda.samples(jags_model,
                         variable.names = c("beta"),
