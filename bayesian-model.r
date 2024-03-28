@@ -8,6 +8,10 @@ y_train <- read.csv('data/y_train.csv')
 X_test <- read.csv('data/X_test.csv')
 y_test <- read.csv('data/y_test.csv')
 
+# Adding a constant term
+X_train <- cbind(1, X_train)
+X_test <- cbind(1, X_test)
+
 ###### MODEL TRAINING
 model_string <- 'model{
   for(i in 1:N){
@@ -39,7 +43,8 @@ jags_model <- jags.model(file = "model.txt",
 samples <- coda.samples(jags_model,
                         variable.names = c("beta"),
                         n.iter = 10000,
-                        thin = 10)
+                        thin = 10
+                        )
 
 save(samples, file = "posterior_samples.RData")
 posterior_df <- as.data.frame(as.mcmc.list(samples))
@@ -50,11 +55,11 @@ print(gelman_result)
 
 ###### SUMMARY 
 summary(samples)
-
 plot(samples)
 
 
 ###### TEST SET PREDICTIONS
+#load("posterior_samples.RData")
 
 predict_proba <- function(beta_samples, X_row) {
   if (is.vector(X_row)) {
