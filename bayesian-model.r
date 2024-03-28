@@ -1,12 +1,14 @@
 library("rjags")
+library('coda')
 
+####### LOADING DATA 
 X_train <- read.csv('data/X_train.csv')
 y_train <- read.csv('data/y_train.csv')
 
 X_test <- read.csv('data/X_test.csv')
 y_test <- read.csv('data/y_test.csv')
 
-# JAGS model
+###### MODEL TRAINING
 model_string <- 'model{
   for(i in 1:N){
     y[i] ~ dbern(p[i])
@@ -22,16 +24,12 @@ model_string <- 'model{
 
 writeLines(model_string , con="model.txt" )
 
-
-
 data_list <- list(
   N = nrow(X_train),
   P = ncol(X_train),  
   y = as.numeric(y_train[,1]),
   X = as.matrix(X_train)
 )
-
-
 
 jags_model <- jags.model(file = "model.txt",
                         data = data_list,
@@ -40,14 +38,23 @@ jags_model <- jags.model(file = "model.txt",
 
 samples <- coda.samples(jags_model,
                         variable.names = c("beta"),
-                        n.iter = 5000,
+                        n.iter = 10000,
                         thin = 10)
+
+save(samples, file = "posterior_samples.RData")
+posterior_df <- as.data.frame(as.mcmc.list(samples))
+write.csv(posterior_df, "posterior_samples.csv", row.names = FALSE)
+
+gelman_result <- gelman.diag(samples)
+print(gelman_result)
+
+###### SUMMARY 
 summary(samples)
 
 plot(samples)
 
 
-# making predictions
+###### TEST SET PREDICTIONS
 
 y_test <- filtered_test_data$target
 TP_encoded_test <- filtered_test_data$TP_encoded
@@ -75,4 +82,6 @@ ggplot(pred_df) +
                  bins = 30, alpha=0.5) +
   geom_histogram(aes(x = pred_2, y = ..density.., color = 'away_team', fill='away_team' ),
                  bins = 30, alpha=0.5)
+
+##### FUTURE MATCHDAY 30 PREDICTIONS
 
