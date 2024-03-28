@@ -56,6 +56,20 @@ plot(samples)
 
 ###### TEST SET PREDICTIONS
 
+predict_proba <- function(beta_samples, X_row) {
+  if (is.vector(X_row)) {
+    X_row <- matrix(X_row, nrow = 1)
+  }
+  eta_samples <- as.matrix(beta_samples) %*% t(X_row) # calc linear predictors.
+  predicted_probabilities <- 1 / (1 + exp(-eta_samples))
+  return(predicted_probabilities)
+}
+
+probabilities_row1 <- predict_proba(beta_samples, X_test[1, ])
+probabilities_row2 <- predict_proba(beta_samples, X_test[2, ])
+
+
+
 y_test <- filtered_test_data$target
 TP_encoded_test <- filtered_test_data$TP_encoded
 OP_encoded_test <- filtered_test_data$OP_encoded
