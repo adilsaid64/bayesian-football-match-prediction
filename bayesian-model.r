@@ -98,7 +98,7 @@ predictions_df <- data.frame(
   Team = factor(rep(c(team_a, team_b), each = length(p_pred_a)))
 )
 
-title <- paste("Predicted Probabilities for", team_a, "vs.", team_b, "Winning")
+title <- paste("Predicted Probabilities of Winning")
 
 ggplot(predictions_df, aes(x = PredictedProbability, fill = Team)) +
   geom_histogram(position = "identity", alpha = 0.5, bins = 30) +
@@ -107,3 +107,4 @@ ggplot(predictions_df, aes(x = PredictedProbability, fill = Team)) +
        y = "Frequency") +
   theme_minimal() +
   theme(legend.title = element_blank())
+
