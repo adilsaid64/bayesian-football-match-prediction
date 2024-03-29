@@ -1,3 +1,4 @@
+setwd("~/Documents/Data analysis projects/Github repos/bayesian-football-match-prediction")
 library("rjags")
 library('coda')
 
@@ -8,9 +9,12 @@ y_train <- read.csv('data/y_train.csv')
 X_test <- read.csv('data/X_test.csv')
 y_test <- read.csv('data/y_test.csv')
 
+X_future <- read.csv('data/X_future.csv')
+
 # Adding a constant term
 X_train <- cbind(1, X_train)
 X_test <- cbind(1, X_test)
+X_future <- cbind(1, X_future)
 
 ###### MODEL TRAINING
 model_string <- 'model{
