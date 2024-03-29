@@ -1,6 +1,7 @@
 setwd("~/Documents/Data analysis projects/Github repos/bayesian-football-match-prediction")
 library("rjags")
 library('coda')
+library(ggplot2)
 
 ####### LOADING DATA 
 X_train <- read.csv('data/X_train.csv')
@@ -54,15 +55,7 @@ samples <- coda.samples(jags_model,
                         thin = 5
                         )
 
-# model didnt converge, rerunning the models.
-#continued_samples <- coda.samples(jags_model,
-#                                  variable.names = c("beta"),
-#                                  n.iter = 20000, 
-#                                  thin = 2)
-
 save(samples, file = "posterior_samples.RData")
-#posterior_df <- as.data.frame(as.mcmc.list(samples))
-#write.csv(posterior_df, "posterior_samples.csv", row.names = FALSE)
 
 gelman_result <- gelman.diag(samples)
 print(gelman_result)
@@ -85,19 +78,32 @@ precision <- sum(predictions & y_test) / sum(predictions)
 print(paste("Accuracy:", accuracy))
 print(paste("Precision:", precision))
 
-library(ggplot2)
-
-pred_df = data.frame(pred_1, pred_2)
-names(pred_df) = c('home', 'away')
-
-ggplot(pred_df) +
-  geom_histogram(aes(x = pred_1, y = ..density.., color = 'home_team', fill='home_team'),
-                 bins = 30, alpha=0.5) +
-  geom_histogram(aes(x = pred_2, y = ..density.., color = 'away_team', fill='away_team' ),
-                 bins = 30, alpha=0.5)
-
 ##### FUTURE MATCHDAY 30 PREDICTIONS
 
-eta <- as.matrix(X_future) %*% posteria_means
-p_pred <- plogis(eta) # same as 1 / (1 + exp(-eta)) or exp(eta) / (1 + exp(eta))
-predictions <- ifelse(p_pred > 0.5, 1, 0)
+eta_future <- as.matrix(X_future) %*% posteria_means
+p_pred_future <- plogis(eta_future) # same as 1 / (1 + exp(-eta)) or exp(eta) / (1 + exp(eta))
+predictions_future <- ifelse(p_pred_future > 0.5, 1, 0)
+
+### By team
+a <- as.matrix(X_future[7,]) %*% t(as.matrix(samples))
+b <- as.matrix(X_future[8,]) %*% t(as.matrix(samples))
+
+p_pred_a <- plogis(a)
+p_pred_b <- plogis(b)
+
+team_a <- 'Liverpool'
+team_b <- 'Brighton'
+predictions_df <- data.frame(
+  PredictedProbability = c(p_pred_a, p_pred_b),
+  Team = factor(rep(c(team_a, team_b), each = length(p_pred_a)))
+)
+
+title <- paste("Predicted Probabilities for", team_a, "vs.", team_b, "Winning")
+
+ggplot(predictions_df, aes(x = PredictedProbability, fill = Team)) +
+  geom_histogram(position = "identity", alpha = 0.5, bins = 30) +
+  labs(title = title,
+       x = "Predicted Probability",
+       y = "Frequency") +
+  theme_minimal() +
+  theme(legend.title = element_blank())
