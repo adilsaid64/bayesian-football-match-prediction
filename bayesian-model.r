@@ -47,27 +47,37 @@ data_list <- list(
 jags_model <- jags.model(file = "model.txt",
                         data = data_list,
                         n.chains = 2,
-                        n.adapt = 1000)
+                        n.adapt = 10000)
 
 samples <- coda.samples(jags_model,
                         variable.names = c("beta"),
-                        n.iter = 10000,
+                        n.iter = 50000,
                         thin = 5
                         )
 
 save(samples, file = "posterior_samples.RData")
 
+# Model Validation
 gelman_result <- gelman.diag(samples)
 print(gelman_result)
+
+autocorr_results <- autocorr.diag(samples)
+print(autocorr_results) # Auto Corr present in some params. Like beta[1].autocorr.plot(samples)
+
+ess_results <- effectiveSize(sample) 
+print(ess_results) # Vary. Poor mixing on some params.
 
 ###### SUMMARY 
 summary(samples)
 plot(samples)
 
-###### TEST SET PREDICTIONS
-#load("posterior_samples.RData")
 
 posteria_means <- colMeans(as.matrix(samples))
+posterior_medians <- apply(as.matrix(samples), 2, median)
+
+
+###### TEST SET PREDICTIONS
+load("posterior_samples.RData")
 
 eta <- as.matrix(X_test) %*% posteria_means
 p_pred <- plogis(eta) # same as 1 / (1 + exp(-eta)) or exp(eta) / (1 + exp(eta))
@@ -85,20 +95,20 @@ p_pred_future <- plogis(eta_future) # same as 1 / (1 + exp(-eta)) or exp(eta) / 
 predictions_future <- ifelse(p_pred_future > 0.5, 1, 0)
 
 ### By team
-a <- as.matrix(X_future[7,]) %*% t(as.matrix(samples))
-b <- as.matrix(X_future[8,]) %*% t(as.matrix(samples))
+a <- as.matrix(X_future[9,]) %*% t(as.matrix(samples))
+b <- as.matrix(X_future[10,]) %*% t(as.matrix(samples))
 
 p_pred_a <- plogis(a)
 p_pred_b <- plogis(b)
 
-team_a <- 'Liverpool'
-team_b <- 'Brighton'
+team_a <- 'Man City'
+team_b <- 'Arsenal'
 predictions_df <- data.frame(
   PredictedProbability = c(p_pred_a, p_pred_b),
   Team = factor(rep(c(team_a, team_b), each = length(p_pred_a)))
 )
 
-title <- paste("Predicted Probabilities of Winning")
+title <- paste("Predicted Probabilities for", team_a, "vs.", team_b, "Winning")
 
 ggplot(predictions_df, aes(x = PredictedProbability, fill = Team)) +
   geom_histogram(position = "identity", alpha = 0.5, bins = 30) +
@@ -107,4 +117,3 @@ ggplot(predictions_df, aes(x = PredictedProbability, fill = Team)) +
        y = "Frequency") +
   theme_minimal() +
   theme(legend.title = element_blank())
-
