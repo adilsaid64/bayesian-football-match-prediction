@@ -7,8 +7,12 @@ There is also a notebook on non-bayesian methods for comparison. Using the tradi
 Medium article cominig soon.
 
 
+
+## Traceplots
 ![Alt text](readme_files/image.png)
 ![Alt text](readme_files/image-1.png)
+
+## Moving Averages Plots
 ![Alt text](readme_files/image-2.png)
 ![Alt text](readme_files/image-3.png)
 ![Alt text](readme_files/image-4.png)
