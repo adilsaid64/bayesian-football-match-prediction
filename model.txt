@@ -2,7 +2,7 @@ model{
   for(i in 1:N){
     y[i] ~ dbern(p[i])
     logit(p[i]) <- eta[i]
-    eta[i] <- inprod(X[i,], beta[]) # linear predictors using inner product notation.
+    eta[i] <- inprod(X[i,], beta[])
   }
   
   # Weakly informative priors for coefficients
@@ -10,3 +10,4 @@ model{
     beta[j] ~ dnorm(0, 0.001)
   }
 }
+
