@@ -92,23 +92,28 @@ plot_convergence <- function(chain1, chain2){
   }
 }
 
+
+plot(samples)
+
+par(mfrow = c(2, 1))
 plot_convergence(chain1, chain2)
 
 autocorr_results <- autocorr.diag(samples)
-print(autocorr_results) # Auto Corr present in some params. Like beta[1].autocorr.plot(samples)
+print(autocorr_results) 
 
 effectiveSize(samples)
+
+
 ###### SUMMARY 
 summary(samples)
-plot(samples)
 
 
 posteria_means <- colMeans(as.matrix(samples))
 posterior_medians <- apply(as.matrix(samples), 2, median)
 
-
+#####################################
 ###### TEST SET PREDICTIONS
-#load("posterior_samples.RData")
+#####################################
 
 eta <- as.matrix(X_test) %*% posteria_means
 
@@ -124,8 +129,34 @@ print(paste("Precision:", precision))
 print(paste("Recall:", recall))
 print(paste("F1 Score:", f1_score))
 
+### By team
+a <- as.matrix(X_test[47,]) %*% t(as.matrix(samples))
+b <- as.matrix(X_test[48,]) %*% t(as.matrix(samples))
 
+p_pred_a <- plogis(a)
+p_pred_b <- plogis(b)
+
+team_a <- 'Fulham'
+team_b <- 'Tottenham'
+predictions_df <- data.frame(
+  PredictedProbability = c(p_pred_a, p_pred_b),
+  Team = factor(rep(c(team_a, team_b), each = length(p_pred_a)))
+)
+
+title <- paste("Predicted Probabilities for", team_a, "vs.", team_b, "Winning")
+
+ggplot(predictions_df, aes(x = PredictedProbability, fill = Team)) +
+  geom_histogram(position = "identity", alpha = 0.5, bins = 30) +
+  labs(title = title,
+       x = "Predicted Probability",
+       y = "Frequency") +
+  theme_minimal() +
+  theme(legend.title = element_blank())
+
+
+#####################################
 ##### FUTURE MATCHDAY 30 PREDICTIONS
+#####################################
 
 eta_future <- as.matrix(X_future) %*% posteria_means
 p_pred_future <- plogis(eta_future) # same as 1 / (1 + exp(-eta)) or exp(eta) / (1 + exp(eta))
@@ -138,8 +169,8 @@ b <- as.matrix(X_future[8,]) %*% t(as.matrix(samples))
 p_pred_a <- plogis(a)
 p_pred_b <- plogis(b)
 
-team_a <- 'Liverpool'
-team_b <- 'Brighton'
+team_a <- 'Aston Villa'
+team_b <- 'Wolves'
 predictions_df <- data.frame(
   PredictedProbability = c(p_pred_a, p_pred_b),
   Team = factor(rep(c(team_a, team_b), each = length(p_pred_a)))
