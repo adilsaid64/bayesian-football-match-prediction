@@ -7,9 +7,9 @@ There is also a notebook on non-bayesian methods for comparison. Using the tradi
 Medium article cominig soon.
 
 
-![Alt text](image.png)
-![Alt text](image-1.png)
-![Alt text](image-2.png)
-![Alt text](image-3.png)
-![Alt text](image-4.png)
-![Alt text](image-5.png)
+![Alt text](readme_files/image.png)
+![Alt text](readme_files/image-1.png)
+![Alt text](readme_files/image-2.png)
+![Alt text](readme_files/image-3.png)
+![Alt text](readme_files/image-4.png)
+![Alt text](readme_files/image-5.png)
