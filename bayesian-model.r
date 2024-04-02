@@ -106,7 +106,8 @@ effectiveSize(samples)
 
 ###### SUMMARY 
 summary(samples)
-
+write.csv(as.data.frame(summary(samples)$statistics), "summary_posterior_statistics.csv", row.names = TRUE)
+write.csv(as.data.frame(summary(samples)$quantiles), "summary_posterior_quantiles.csv", row.names = TRUE)
 
 posteria_means <- colMeans(as.matrix(samples))
 posterior_medians <- apply(as.matrix(samples), 2, median)
@@ -128,6 +129,7 @@ print(paste("Accuracy:", accuracy))
 print(paste("Precision:", precision))
 print(paste("Recall:", recall))
 print(paste("F1 Score:", f1_score))
+
 
 ### By team
 a <- as.matrix(X_test[47,]) %*% t(as.matrix(samples))
