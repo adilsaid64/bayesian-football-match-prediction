@@ -1,0 +1,13 @@
+is_home,team_playing_ft_goals_rolling_mean,team_playing_total_shots_rolling_mean,team_playing_corners_won_rolling_mean,target_rolling_mean,opponent_fouls_committed_rolling_mean
+1,2.2,10.4,3.0,0.4,13.8
+0,2.0,14.8,4.0,0.4,12.2
+1,2.2,13.4,4.8,0.4,9.8
+0,0.8,11.6,4.6,0.2,11.4
+1,1.2,10.4,3.2,0.0,9.8
+0,1.6,15.4,6.2,0.6,8.6
+1,2.0,12.6,6.8,0.6,12.6
+0,1.0,12.4,4.8,0.6,8.0
+1,2.6,22.0,9.4,0.8,10.4
+0,1.6,15.6,7.8,0.4,12.2
+1,1.4,21.6,9.8,0.6,9.6
+0,4.6,19.6,7.6,1.0,11.0
