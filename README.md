@@ -7,6 +7,12 @@ There is also a notebook on non-bayesian methods for comparison. Using the tradi
 [Medium article.](https://medium.com/@adilsaid64/predicting-premier-league-match-wins-using-bayesian-modelling-32eec733472e)
 
 
+## Full Posterior Samples
+
+- `posterior_samples.RData` contains the MCMC samples of the posterior distribution.
+
+It can be loaded up into R.
+
 
 ## Traceplots
 ![Alt text](readme_files/image.png)
